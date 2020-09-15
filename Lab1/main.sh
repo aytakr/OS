@@ -1,45 +1,51 @@
 #! /usr/bin/env bash
-var1=5
-while [ $var1 -gt 0 ]
-do
+case $1 in
+calc)
+  if [[ $# -ne 4 ]]
+  then
+    echo "Ошибка - неправильное количество аргументов. Введите sum/sub/mul/div и два целых числа"
+    exit 0
+  fi
+  re='^[0-9]+$'
+  if ! [[ "$3" =~ $re && "$4" =~ $re ]]
+  then
+    echo "Ошибка - Неверный третий или четверный аргумент. Выберите в качестве третьего и четвертого аргументов целое число"
+    exit 0
+  fi
+  if [[ "$2" = "div" && $4 -eq 0 ]]
+  then
+    echo "Ошибка - деление на ноль невозможно"
+    exit 0
+  fi
+  if [[ "$2" != "sum" && "$2" != "sub" && "$2" != "mul" && "$2" != "div" ]]
+  then
+    echo "Ошибка - Неверный второй аргумент. Выберите вторым аргументом sum/sub/mul/div"
+    echo "$2"
+    exit 0
+  fi
+  . ./calc
+  res=$($2 $3 $4)
+  echo "$res"
+  exit 0
+;;
+search)
+
+  exit 0
+;;
+reverse)
+
+  exit 0
+;;
+strlen)
+  echo "$2" | awk '{print length}'
+  exit 0
+;;
+exit)
+  exit 0
+;;
+help)
   . ./menu
   menu
-
-
-  read code
-
-  case $code in
-  calc)
-    while [ $var1 -gt 0 ]
-    do
-      echo "Введите sum/sub/mul/div и два целых числа или back, чтобы вернуться назад"
-      read arg2 arg3 arg4
-      if [ $# -ne 4 ]
-      then
-        echo "Введите sum/sub/mul/div и два целых числа или back, чтобы вернуться назад"
-        continue
-      fi
-      if [ "$arg2" = "back" ]
-      then
-        break
-      fi
-      . ./calc
-      res=$($arg2 $arg3 $arg4)
-      echo "$res"
-    done
-    ;;
-  search)
-    direct=`dir`
-    echo "$direct"
-    echo "------------------------------"
-    cd contest
-    echo `dir`
-    cd ..
-    ;;
-  reverse)
-    read f1 f2
-    t1=`tail $f1`
-    echo "$t1"
-  esac
-
-done
+  exit 0
+;;
+esac
