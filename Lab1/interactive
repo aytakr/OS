@@ -1,0 +1,16 @@
+function interactive {
+  var1=5
+  while [ $var1 -gt 0 ]
+  do
+    echo "Выберите параметр запуска:"
+    . ./menu
+    menu
+    read code
+    case $code in
+    calc)
+      echo "$code"
+      exit 0
+    ;;
+    esac
+  done
+}

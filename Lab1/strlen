@@ -1,0 +1,3 @@
+function strlen {
+  echo "$1" | awk '{print length}'
+}
