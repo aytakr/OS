@@ -14,6 +14,11 @@ do
     do
       echo "Введите sum/sub/mul/div и два целых числа или back, чтобы вернуться назад"
       read arg2 arg3 arg4
+      if [ $# -ne 4 ]
+      then
+        echo "Введите sum/sub/mul/div и два целых числа или back, чтобы вернуться назад"
+        continue
+      fi
       if [ "$arg2" = "back" ]
       then
         break
