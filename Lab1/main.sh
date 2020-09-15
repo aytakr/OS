@@ -1,6 +1,16 @@
 #! /usr/bin/env bash
 case $1 in
 calc)
+  if ! [[ -e $1 ]]
+  then
+    echo "Ошибка - нет файла calc"
+    exit 0
+  fi
+  if ! [[ -r $1 ]]
+  then
+    echo "Ошибка - недостаточно прав для запуска calc"
+    exit 0
+  fi
   if [[ $# -ne 4 ]]
   then
     echo "Ошибка - неправильное количество аргументов. После $1 введите sum/sub/mul/div и два целых числа"
