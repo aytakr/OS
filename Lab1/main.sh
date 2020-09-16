@@ -11,6 +11,9 @@ function argumentError {
 function mathError {
   exit -4
 }
+function noDirectoryError {
+  exit -5
+}
 case $1 in
 calc)
   if ! [[ -e $1 ]]
@@ -65,10 +68,18 @@ search)
     echo "Ошибка - неправильное количество аргументов. После $1 введите название директории и регулярное выражение"
     argumentError
   fi
-  cd /home/michil/
-  ls | grep Documents
-  echo `pwd`
-  #. ./search
+  if ! [[ -d $2 ]]
+  then
+    echo "Ошибка - такой директории не существует"
+    noDirectoryError
+  fi
+  if ! [[ -r $2 ]]
+  then
+    echo "Ошибка - недостаточно прав для открытия $2"
+    accessError
+  fi
+  . ./search
+  search $2 $3
   exit 0
 ;;
 reverse)
@@ -103,11 +114,11 @@ reverse)
   done
   if [[ $flag1 -ne 1 || $flag2 -ne 1 ]]
   then
-    echo "Ошибка - таких файлов нет в директории."
+    echo "Ошибка - нет файла $2 или $3."
     noFileError
   fi
   . ./reverse
-  $(rev $2 $3)
+  rev $2 $3
   exit 0
 ;;
 strlen)
@@ -164,7 +175,8 @@ exit)
     echo "Ошибка - неправильное количество аргументов. Параметр $1 не имеет дополнительных аргументов"
     argumentError
   fi
-  exit
+  . ./exit
+  ex
 ;;
 help)
   if ! [[ -e $1 ]]
@@ -187,14 +199,14 @@ help)
   exit 0
 ;;
 interactive)
-  if ! [[ -e $1 ]]
+  if ! [[ -e $1.sh ]]
   then
-    echo "Ошибка - нет файла $1"
+    echo "Ошибка - нет файла $1.sh"
     noFileError
   fi
-  if ! [[ -r $1 ]]
+  if ! [[ -r $1.sh ]]
   then
-    echo "Ошибка - недостаточно прав для запуска $1"
+    echo "Ошибка - недостаточно прав для запуска $1.sh"
     accessError
   fi
   if [[ $# -ne 1 ]]
@@ -202,7 +214,7 @@ interactive)
     echo "Ошибка - неправильное количество аргументов. Параметр $1 не имеет дополнительных аргументов"
     argumentError
   fi
-  . ./interactive
+  . ./interactive.sh
   interactive
   exit 0
 ;;
