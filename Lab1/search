@@ -1,4 +1,0 @@
-function search {
-  cd "$1"
-  grep -r "$2"
-}

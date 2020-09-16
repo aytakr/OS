@@ -1,3 +1,0 @@
-function rev {
-  sort -r "$1" >> "$2"
-}

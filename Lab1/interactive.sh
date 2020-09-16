@@ -1,17 +1,13 @@
 function interactive {
+  if [[ $1 -ne 1 ]]
+  then
+    echo "Ошибка - неправильное количество аргументов. Параметр interactive не имеет дополнительных аргументов"
+    argumentError
+  fi
   var1=5
-  if ! [[ -e help ]]
-  then
-    echo "Ошибка - нет файла help"
-    noFileError
-  fi
-  if ! [[ -r help ]]
-  then
-    echo "Ошибка - недостаточно прав для запуска help"
-    accessError
-  fi
-  . ./help
-  help
+  checkFile help
+  . ./help.sh
+  help $#
   while [ $var1 -gt 0 ]
   do
     read code
@@ -59,9 +55,10 @@ function interactive {
         echo "Ошибка - Неверный аргумент действия. Введите sum/sub/mul/div"
         argumentError
       fi
-      . ./calc
-      res=$($arg2 $arg3 $arg4)
-      echo "$res"
+      . ./calc.sh
+      #res=$($arg2 $arg3 $arg4 $)
+      #echo "$res"
+      calc $arg2 $arg3 $arg4 1
     ;;
     search)
       echo "Введите директорию и строку или регулярное выражение или back, чтобы вернуться назад:"
