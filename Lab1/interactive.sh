@@ -1,212 +1,150 @@
+function noFileError_int {
+  return -1
+}
+function accessError_int {
+  return -2
+}
+function argumentError_int {
+  return -3
+}
+function mathError_int {
+  return -4
+}
+function noDirectoryError_int {
+  return -5
+} #ошибки в интерактивном режиме
+function checkFile_int {
+  if ! [[ -e $1.sh ]]
+  then
+    echo -e "\033[31mОшибка - нет файла $1.sh"
+    return -1
+  fi
+  if ! [[ -r $1.sh ]]
+  then
+    echo -e "\033[31mОшибка - недостаточно прав для запуска $1.sh"
+    return -2
+  fi
+  return 0
+} #проверка файлов .sh в интерактивном режиме
+function backToMenu {
+  if [[ $1 = "back" && -n $2 ]]
+  then
+    echo -e "\033[31mОшибка - неправильное количество аргументов. После $1 нет аргументов"
+    argumentError_int
+    return $?
+  fi
+  if [[ $1 = "back" ]]
+  then
+    return 0
+  fi
+  return 1
+}
 function interactive {
+  var="interactive"
   if [[ $1 -ne 1 ]]
   then
-    echo "Ошибка - неправильное количество аргументов. Параметр interactive не имеет дополнительных аргументов"
+    echo -e "\033[31mОшибка - неправильное количество аргументов. Параметр interactive не имеет дополнительных аргументов\033[0m"
     argumentError
   fi
   var1=5
-  checkFile help
-  . ./help.sh
-  help $#
+  checkFile_int help
+  if ! [[ $? -eq 255 || $? -eq 254 ]]
+  then
+    . ./help.sh
+  fi
   while [ $var1 -gt 0 ]
   do
+    help $# $var
     read code
     case $code in
     calc)
-      echo "Введите sum/sub/mul/div и два целых числа или back, чтобы вернуться назад"
-      read arg2 arg3 arg4 arg5
-      if [[ $arg2 = "back" && -n $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. После $arg2 нет аргументов"
-        argumentError
-      fi
-      if [[ $arg2 = "back" ]]
+      checkFile_int $code
+      if [[ $? -eq 255 || $? -eq 254 ]]
       then
         continue
       fi
-      if ! [[ -e $code ]]
+      echo -e "\033[36mВведите sum/sub/mul/div и два целых числа или back, чтобы вернуться назад\033[0m"
+      read arg2 arg3 arg4 arg5
+      backToMenu $arg2 $arg3
+      if [[ $? -eq 0 || $? -eq 253 ]]
       then
-        echo "Ошибка - нет файла $code"
-        noFileError
-      fi
-      if ! [[ -r $code ]]
-      then
-        echo "Ошибка - недостаточно прав для запуска $code"
-        accessError
-      fi
-      if [[ -n $arg5 || -z $arg2 || -z $arg3 || -z $arg4 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. После $code введите sum/sub/mul/div и два целых числа"
-        argumentError
-      fi
-      re='^[0-9]+$'
-      if ! [[ "$arg3" =~ $re && "$arg4" =~ $re ]]
-      then
-        echo "Ошибка - Неверный третий или четверный аргумент. Выберите в качестве третьего и четвертого аргументов целое число"
-        argumentError
-      fi
-      if [[ $arg2 = "div" && $arg4 -eq 0 ]]
-      then
-        echo "Ошибка - деление на ноль невозможно"
-        mathError
-      fi
-      if [[ "$arg2" != "sum" && "$arg2" != "sub" && "$arg2" != "mul" && "$arg2" != "div" ]]
-      then
-        echo "Ошибка - Неверный аргумент действия. Введите sum/sub/mul/div"
-        argumentError
+        continue
       fi
       . ./calc.sh
-      #res=$($arg2 $arg3 $arg4 $)
-      #echo "$res"
-      calc $arg2 $arg3 $arg4 1
+      calc $var $arg2 $arg3 $arg4 $arg5
     ;;
     search)
-      echo "Введите директорию и строку или регулярное выражение или back, чтобы вернуться назад:"
-      read arg2 arg3 arg4
-      if [[ $arg2 = "back" && -n $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. После $arg2 нет аргументов"
-        argumentError
-      fi
-      if [[ $arg2 = "back" ]]
+      checkFile_int $code
+      if [[ $? -eq 255 || $? -eq 254 ]]
       then
         continue
       fi
-      if ! [[ -e $code ]]
+      echo -e "\033[36mВведите директорию и строку или регулярное выражение или back, чтобы вернуться назад\033[0m"
+      read arg2 arg3 arg4
+      backToMenu $arg2 $arg3
+      if [[ $? -eq 0 || $? -eq 253 ]]
       then
-        echo "Ошибка - нет файла $code"
-        noFileError
+        continue
       fi
-      if ! [[ -r $code ]]
-      then
-        echo "Ошибка - недостаточно прав для запуска $code"
-        accessError
-      fi
-      if [[ -n $arg4 || -z $arg2 || -z $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. Введите директорию и строку или регулярное выражение или back, чтобы вернуться назад"
-        argumentError
-      fi
-      if ! [[ -d $arg2 ]]
-      then
-        echo "Ошибка - такой директории не существует"
-        noDirectoryError
-      fi
-      if ! [[ -r $arg2 ]]
-      then
-        echo "Ошибка - недостаточно прав для открытия $2"
-        accessError
-      fi
-      . ./search
-      search $arg2 $arg3
+      . ./search.sh
+      search $var $arg2 $arg3 $arg4
     ;;
     reverse)
-      echo "Введите названия двух файлов или back, чтобы вернуться:"
-      read arg2 arg3 arg4
-      if [[ $arg2 = "back" && -n $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. После $arg2 нет аргументов"
-        argumentError
-      fi
-      if [[ $arg2 = "back" ]]
+      checkFile_int $code
+      if [[ $? -eq 255 || $? -eq 254 ]]
       then
         continue
       fi
-      if ! [[ -e $code ]]
+      echo -e "\033[36mВведите названия двух файлов или back, чтобы вернуться\033[0m"
+      read arg2 arg3 arg4
+      backToMenu $arg2 $arg3
+      if [[ $? -eq 0 || $? -eq 253 ]]
       then
-        echo "Ошибка - нет файла $code"
-        noFileError
+        continue
       fi
-      if ! [[ -r $code ]]
-      then
-        echo "Ошибка - недостаточно прав для запуска $code"
-        accessError
-      fi
-      if [[ -n $arg4 || -z $arg2 || -z $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. Введите названия двух файлов"
-        argumentError
-      fi
-      files=($(ls))
-      flag1=0
-      flag2=0
-      for file in "${files[@]}"
-      do
-        if [[ "$file" == "$arg2" ]]
-        then
-          flag1=1
-        fi
-        if [[ "$file" == "$arg3" ]]
-        then
-          flag2=1
-        fi
-      done
-      if [[ $flag1 -ne 1 || $flag2 -ne 1 ]]
-      then
-        echo "Ошибка - нет файла $arg2 или $arg3."
-        noFileError
-      fi
-      . ./reverse
-      rev $arg2 $arg3
+      . ./reverse.sh
+      rev $var $arg2 $arg3 $arg4
     ;;
     strlen)
-      echo "Введите строку или back, чтобы вернуться"
-      read arg2 arg3
-      if [[ $arg2 = "back" && -n $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. После $arg2 нет аргументов"
-        argumentError
-      fi
-      if [[ $arg2 = "back" ]]
+      checkFile_int $code
+      if [[ $? -eq 255 || $? -eq 254 ]]
       then
         continue
       fi
-      if ! [[ -e $code ]]
+      echo -e "\033[36mВведите строку или back, чтобы вернуться\033[0m"
+      read arg2 arg3
+      backToMenu $arg2 $arg3
+      if [[ $? -eq 0 || $? -eq 253 ]]
       then
-        echo "Ошибка - нет файла $code"
-        noFileError
+        continue
       fi
-      if ! [[ -r $code ]]
-      then
-        echo "Ошибка - недостаточно прав для запуска $code"
-        accessError
-      fi
-      if [[ -n $arg3 ]]
-      then
-        echo "Ошибка - неправильное количество аргументов. Введите названия двух файлов"
-        argumentError
-      fi
-      . ./strlen
-      echo "$(strlen $arg2)"
+      . ./strlen.sh
+      strlen $var $arg2 $arg3
     ;;
     log)
-      if ! [[ -e $code ]]
+      checkFile_int $code
+      if [[ $? -eq 255 || $? -eq 254 ]]
       then
-        echo "Ошибка - нет файла $code"
-        noFileError
+        continue
       fi
-      if ! [[ -r $code ]]
-      then
-        echo "Ошибка - недостаточно прав для запуска $code"
-        accessError
-      fi
+      . ./log.sh
+      log $var
     ;;
     exit)
-      if ! [[ -e $code ]]
+      checkFile_int $code
+      if [[ $? -eq 255 || $? -eq 254 ]]
       then
-        echo "Ошибка - нет файла $code"
-        noFileError
+        continue
       fi
-      if ! [[ -r $code ]]
-      then
-        echo "Ошибка - недостаточно прав для запуска $code"
-        accessError
-      fi
-      . ./exit
-      ex
+      . ./exit.sh
+      ex $#
     ;;
     help)
-      help
+      help $# $var
+    ;;
+    *)
+
+      help $# $var
     ;;
     esac
   done

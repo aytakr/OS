@@ -13,31 +13,19 @@ function mathError {
 }
 function noDirectoryError {
   exit -5
-}
+} #ошибки в неинтерактивном режиме
 function checkFile {
   if ! [[ -e $1.sh ]]
   then
-    echo "Ошибка - нет файла $1.sh"
+    echo -e "\033[31mОшибка - нет файла $1.sh"
     noFileError
   fi
   if ! [[ -r $1.sh ]]
   then
-    echo "Ошибка - недостаточно прав для запуска $1.sh"
+    echo -e "\033[31mОшибка - недостаточно прав для запуска $1.sh"
     accessError
   fi
-} #Файлы .sh
-function checkUsingFile {
-  if ! [[ -e $1 ]]
-  then
-    echo "Ошибка - нет файла $1"
-    noFileError
-  fi
-  if ! [[ -r $1 ]]
-  then
-    echo "Ошибка - недостаточно прав для запуска $1"
-    accessError
-  fi
-} #Файлы-аргументы
+} #проверка файлов .sh в неинтерактивном режиме
 case $1 in
 calc)
   checkFile $1
@@ -87,17 +75,13 @@ interactive)
   exit 0
 ;;
 *)
-  if ! [[ -e "help" ]]
+  if ! [[ -z $1 ]]
   then
-    echo "Ошибка - нет файла help"
-    noFileError
+    echo "Нет параметра $1"
   fi
-  if ! [[ -r "help" ]]
-  then
-    echo "Ошибка - недостаточно прав для запуска help"
-    accessError
-  fi
-  . ./help
-  help
+  var="help"
+  checkFile $var
+  . ./help.sh
+  help 1
 ;;
 esac
