@@ -48,7 +48,7 @@ reverse)
 strlen)
   checkFile $1
   . ./strlen.sh
-  strlen $2 $#
+  strlen "$2" $#
   exit 0
 ;;
 log)
@@ -60,7 +60,7 @@ log)
 exit)
   checkFile $1
   . ./exit.sh
-  ex $#
+  ex $2 $#
 ;;
 help)
   checkFile $1

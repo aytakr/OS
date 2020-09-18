@@ -54,7 +54,8 @@ function interactive {
   fi
   while [ $var1 -gt 0 ]
   do
-    help $# $var
+    #help $# $var
+    echo -e "\033[36mЗапущен интерактивный режим. Выберите параметр запуска: calc/search/reverse/strlen/log/exit/help\033[0m"
     read code
     case $code in
     calc)
@@ -119,7 +120,7 @@ function interactive {
         continue
       fi
       . ./strlen.sh
-      strlen $var $arg2 $arg3
+      strlen $var "$arg2" $arg3
     ;;
     log)
       checkFile_int $code
@@ -136,8 +137,10 @@ function interactive {
       then
         continue
       fi
+      echo -e "\033[36mВведите код выхода\033[0m"
+      read arg2
       . ./exit.sh
-      ex $#
+      ex $arg2 $#
     ;;
     help)
       help $# $var

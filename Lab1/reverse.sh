@@ -19,19 +19,19 @@ function rev {
       accessError_int
       return $?
     fi
-    if ! [[ -e $3 ]]
+    if ! [[ -w $HOME ]]
     then
-      echo -e "\033[31mОшибка - нет файла $3\033[0m"
-      noFileError_int
-      return $?
-    fi
-    if ! [[ -r $3 ]]
-    then
-      echo -e "\033[31mОшибка - недостаточно прав для запуска $3\033[0m"
+      echo -e "\033[31mОшибка - недостаточно прав для создания файла в $HOME\033[0m"
       accessError_int
       return $?
     fi
-    sort -r "$2" >> "$3"
+    for i in $(tac "$2")
+    do
+      for j in $entry
+      do
+        echo "$value" | awk '{ for (i=NF; i>1; i--) printf("$s ", $i); printf $2;}' >> $3
+      done
+    done
   else # неинтерактивный режим
     if [[ $3 -ne 3 ]]
     then
@@ -48,16 +48,17 @@ function rev {
       echo -e "\033[31mОшибка - недостаточно прав для запуска $1\033[0m"
       accessError
     fi
-    if ! [[ -e $2 ]]
+    if ! [[ -w $HOME ]]
     then
-      echo -e "\033[31mОшибка - нет файла $2\033[0m"
-      noFileError
+      echo -e "\033[31mОшибка - недостаточно прав для создания файла в $HOME\033[0m"
+      accesError
     fi
-    if ! [[ -r $2 ]]
-    then
-      echo -e "\033[31mОшибка - недостаточно прав для запуска $2\033[0m"
-      accessError
-    fi
-    sort -r "$1" >> "$2"
+    for i in $(tac "$1")
+    do
+      for j in $entry
+      do
+        echo "$value" | awk '{ for (i=NF; i>1; i--) printf("$s ", $i); printf $1;}' >> $2
+      done
+    done
   fi
 }

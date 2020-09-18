@@ -19,7 +19,7 @@ function search {
       accessError_int
       return $?
     fi
-    grep -r "$3" "$2"
+    grep -r -s "$3" "$2"
   else # неинтерактивный режим
     if [[ $3 -ne 3 ]]
     then
@@ -36,6 +36,6 @@ function search {
       echo -e "\033[31mОшибка - недостаточно прав для открытия $1\033[0m"
       accessError
     fi
-    grep -r "$2" "$1"
+    grep -r -s "$2" "$1"
   fi
 }
