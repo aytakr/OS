@@ -1,9 +1,11 @@
 function strlen {
   if [[ $1 = "interactive" ]] # интеративный режим
   then
-    if [[ -n $3 ]]
+    IFS=$''
+    if [[ -n $3 || -z $2 ]]
     then
       echo -e "\033[31mОшибка - неправильное количество аргументов. После strlen введите строку\033[0m"
+      echo "$3"
       argumentError_int
       return $?
     fi

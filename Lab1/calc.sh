@@ -26,7 +26,7 @@ function calc {
       argumentError_int
       return $?
     fi
-    if [[ $2 = "div" && $4 -eq 0 || $4 -eq -0 ]]
+    if [[ "$2" = "div" && $4 -eq 0 || "$2" = "div" && $4 -eq -0 ]]
     then
       echo -e "\033[31mОшибка - деление на ноль невозможно\033[0m"
       mathError_int
@@ -52,7 +52,7 @@ function calc {
       echo -e "\033[31mОшибка - Неверный третий или четверный аргумент. Выберите в качестве третьего и четвертого аргументов целое число\033[0m"
       argumentError
     fi
-    if [[ "$1" = "div" && $3 -eq 0 || $3 -eq -0 ]]
+    if [[ "$1" = "div" && $3 -eq 0 || "$1" = "div" && $3 -eq -0 ]]
     then
       echo -e "\033[31mОшибка - деление на ноль невозможно\033[0m"
       mathError

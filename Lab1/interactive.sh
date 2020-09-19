@@ -52,10 +52,11 @@ function interactive {
   then
     . ./help.sh
   fi
+  echo -e "\033[36mЗапущен интерактивный режим\033[0m"
   while [ $var1 -gt 0 ]
   do
     #help $# $var
-    echo -e "\033[36mЗапущен интерактивный режим. Выберите параметр запуска: calc/search/reverse/strlen/log/exit/help\033[0m"
+    echo -e "\033[36mВыберите параметр запуска: calc/search/reverse/strlen/log/exit/help\033[0m"
     read code
     case $code in
     calc)
@@ -107,6 +108,7 @@ function interactive {
       rev $var $arg2 $arg3 $arg4
     ;;
     strlen)
+      IFS=$''
       checkFile_int $code
       if [[ $? -eq 255 || $? -eq 254 ]]
       then
@@ -138,15 +140,19 @@ function interactive {
         continue
       fi
       echo -e "\033[36mВведите код выхода\033[0m"
-      read arg2
+      read arg2 arg3
+      if [[ -n $arg3 ]]
+      then
+        echo -e "\033[31mОшибка - слишком много аргументов\033[0m"
+        continue
+      fi
       . ./exit.sh
-      ex $arg2 $#
+      ex $arg2 $# $var
     ;;
     help)
       help $# $var
     ;;
     *)
-
       help $# $var
     ;;
     esac

@@ -4,20 +4,27 @@ function ex {
     echo -e "\033[31mОшибка - слишком много аргументов\033[0m"
     argumentError
   fi
-  if [[ -z $1 ]]
-  then
-    echo "0"
-    exit 0
-  fi
   re='^-?[0-256]+$'
-  if ! [[ "$1" =~ $re ]]
+  if ! [[ "$1" =~ $re ]] || [[ "$1" =~ $re && "$1" -gt 256 ]] || [[ "$1" =~ $re && "$1" -lt -256 ]]
   then
     echo -e "\033[31mОшибка - введите параметр выхода (число от -256 до 256)\033[0m"
+    if [[ "$3" = "interactive" ]]
+    then
+      argumentError_int
+      return $?
+    fi
     argumentError
   fi
-  if [[ $1 -lt 0 ]]
+  if [[ $1 -eq 1 ]]
   then
-    exit $1
+    if [[ "$2" = "interactive" ]]
+    then
+      exit 0
+    fi
+    if ! [[ $2 ]]
+    then
+      exit 0
+    fi
   fi
   exit $1
 }

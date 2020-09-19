@@ -1,4 +1,5 @@
 function rev {
+  IFS=$'\n'
   if [[ $1 = "interactive" ]] #интерактивный режим
   then
     if [[ -n $4 || -z $2 || -z $3 ]]
@@ -16,20 +17,25 @@ function rev {
     if ! [[ -r $2 ]]
     then
       echo -e "\033[31mОшибка - недостаточно прав для запуска $2\033[0m"
+      accessError
+    fi
+    if [[ -f $3 ]] && ! [[ -w $3 ]]
+    then
+      echo -e "\033[31mОшибка - нет доступа к файлу $3\033[0m"
       accessError_int
       return $?
     fi
-    if ! [[ -w $HOME ]]
+    if ! [[ -w "${dirname $3}" ]]
     then
-      echo -e "\033[31mОшибка - недостаточно прав для создания файла в $HOME\033[0m"
+      echo -e "\033[31mОшибка - нет доступа к директории файла $3\033[0m"
       accessError_int
       return $?
     fi
     for i in $(tac "$2")
     do
-      for j in $entry
+      for j in $i
       do
-        echo "$value" | awk '{ for (i=NF; i>1; i--) printf("$s ", $i); printf $2;}' >> $3
+        echo "$j" | awk '{ for (i=NF; i>1; i--) printf("%s ", $i); printf $2; }' >> $3
       done
     done
   else # неинтерактивный режим
@@ -48,16 +54,21 @@ function rev {
       echo -e "\033[31mОшибка - недостаточно прав для запуска $1\033[0m"
       accessError
     fi
-    if ! [[ -w $HOME ]]
+    if [[ -f $2 ]] && ! [[ -w $2 ]]
     then
-      echo -e "\033[31mОшибка - недостаточно прав для создания файла в $HOME\033[0m"
-      accesError
+      echo -e "\033[31mОшибка - нет доступа к файлу $2\033[0m"
+      accessError
+    fi
+    if ! [[ -w "${dirname $2}" ]]
+    then
+      echo -e "\033[31mОшибка - нет доступа к директории файла $2\033[0m"
+      accessError
     fi
     for i in $(tac "$1")
     do
-      for j in $entry
+      for j in $i
       do
-        echo "$value" | awk '{ for (i=NF; i>1; i--) printf("$s ", $i); printf $1;}' >> $2
+        echo "$j" | awk '{ for (i=NF; i>1; i--) printf("%s ", $i); printf $1; printf ("\n"); }' >> "$2"
       done
     done
   fi
