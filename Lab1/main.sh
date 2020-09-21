@@ -42,7 +42,7 @@ search)
 reverse)
   checkFile $1
   . ./reverse.sh
-  rev $2 $3 $#
+  reverse $2 $3 $#
   exit 0
 ;;
 strlen)

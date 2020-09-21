@@ -105,7 +105,7 @@ function interactive {
         continue
       fi
       . ./reverse.sh
-      rev $var $arg2 $arg3 $arg4
+      reverse $var $arg2 $arg3 $arg4
     ;;
     strlen)
       IFS=$''

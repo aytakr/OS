@@ -1,4 +1,4 @@
-function rev {
+function reverse {
   IFS=$'\n'
   if [[ $1 = "interactive" ]] #интерактивный режим
   then
@@ -25,19 +25,13 @@ function rev {
       accessError_int
       return $?
     fi
-    if ! [[ -w "${dirname $3}" ]]
+    if ! [[ -w "$(dirname $3)" ]]
     then
       echo -e "\033[31mОшибка - нет доступа к директории файла $3\033[0m"
       accessError_int
       return $?
     fi
-    for i in $(tac "$2")
-    do
-      for j in $i
-      do
-        echo "$j" | awk '{ for (i=NF; i>1; i--) printf("%s ", $i); printf $2; }' >> $3
-      done
-    done
+    rev $2 >> $3
   else # неинтерактивный режим
     if [[ $3 -ne 3 ]]
     then
@@ -59,17 +53,11 @@ function rev {
       echo -e "\033[31mОшибка - нет доступа к файлу $2\033[0m"
       accessError
     fi
-    if ! [[ -w "${dirname $2}" ]]
+    if ! [[ -w "$(dirname $2)" ]]
     then
       echo -e "\033[31mОшибка - нет доступа к директории файла $2\033[0m"
       accessError
     fi
-    for i in $(tac "$1")
-    do
-      for j in $i
-      do
-        echo "$j" | awk '{ for (i=NF; i>1; i--) printf("%s ", $i); printf $1; printf ("\n"); }' >> "$2"
-      done
-    done
+    rev $1 >> $2
   fi
 }
