@@ -25,12 +25,19 @@ function reverse {
       accessError_int
       return $?
     fi
-    if ! [[ -w "$(dirname $3)" ]]
+    if ! [[ -r "$(dirname $3)" ]]
     then
       echo -e "\033[31mОшибка - нет доступа к директории файла $3\033[0m"
       accessError_int
       return $?
     fi
+    if ! [[ -w "$(dirname $3)" ]] && ! [[ -f "$3" ]]
+    then
+      echo -e "\033[31mОшибка - нет доступа к директории, чтобы создать файл\033[0m"
+      accessError_int
+      return $?
+    fi
+    echo -n > $3
     tac $2 >> a.txt
     rev a.txt >> $3
     rm a.txt
@@ -50,16 +57,22 @@ function reverse {
       echo -e "\033[31mОшибка - недостаточно прав для запуска $1\033[0m"
       accessError
     fi
+    if ! [[ -r "$(dirname $2)" ]]
+    then
+      echo -e "\033[31mОшибка - нет доступа к директории файла $2\033[0m"
+      accessError
+    fi
+    if ! [[ -w "$(dirname $2)" ]] && ! [[ -f "$2" ]]
+    then
+      echo -e "\033[31mОшибка - нет доступа к директории, чтобы создать файл\033[0m"
+      accessError
+    fi
     if [[ -f $2 ]] && ! [[ -w $2 ]]
     then
       echo -e "\033[31mОшибка - нет доступа к файлу $2\033[0m"
       accessError
     fi
-    if ! [[ -w "$(dirname $2)" ]]
-    then
-      echo -e "\033[31mОшибка - нет доступа к директории файла $2\033[0m"
-      accessError
-    fi
+    echo -n > $2
     tac $1 >> a.txt
     rev a.txt >> $2
     rm a.txt

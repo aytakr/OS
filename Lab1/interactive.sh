@@ -153,6 +153,7 @@ function interactive {
       help $# $var
     ;;
     *)
+      echo -e "\033[36mНужно ввести аргумент\033[0m"
       help $# $var
     ;;
     esac
