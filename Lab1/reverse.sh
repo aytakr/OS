@@ -31,7 +31,9 @@ function reverse {
       accessError_int
       return $?
     fi
-    rev $2 >> $3
+    tac $2 >> a.txt
+    rev a.txt >> $3
+    rm a.txt
   else # неинтерактивный режим
     if [[ $3 -ne 3 ]]
     then
@@ -58,6 +60,8 @@ function reverse {
       echo -e "\033[31mОшибка - нет доступа к директории файла $2\033[0m"
       accessError
     fi
-    rev $1 >> $2
+    tac $1 >> a.txt
+    rev a.txt >> $2
+    rm a.txt
   fi
 }
